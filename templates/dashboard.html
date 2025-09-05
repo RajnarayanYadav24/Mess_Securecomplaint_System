@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Warden Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<div style="overflow-x:auto;">
+<table>
+    <tr>
+        {% for header in headers %}
+        <th>{{ header }}</th>
+        {% endfor %}
+        <th>Action</th>
+    </tr>
+    {% for row in complaints %}
+    <tr>
+        {% for item in row %}
+        <td>{{ item }}</td>
+        {% endfor %}
+        <td>
+            {% if row[6] == "Pending" %}
+                <a href="{{ url_for('mark_resolved', index=loop.index0) }}">
+                    <button>Mark Resolved</button>
+                </a>
+            {% else %}
+                Resolved
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+</div>

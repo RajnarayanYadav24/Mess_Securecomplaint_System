@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Complaint Form</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>Raise Complaint / Feedback</h2>
+    <form method="POST" autocomplete="off">
+        Name: <input type="text" name="name" required>
+        Room No: <input type="text" name="room" required>
+        Mobile: <input type="text" name="mobile" required>
+        Branch: <input type="text" name="branch" required>
+        Complaint:<br>
+        <textarea name="complaint" rows="4" required></textarea>
+        <input type="submit" value="Submit">
+    </form>
+    <p>Scan the QR code for this form:</p>
+    <img src="{{ url_for('static', filename='mess_feedback_qr.png') }}" width="200">
+</body>
+</html>
