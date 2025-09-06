@@ -3,6 +3,8 @@ import csv
 import os
 from datetime import datetime
 from dotenv import load_dotenv
+from db import insert_complaint, get_all_complaints,mark_complaint_resolved,delete_complaint
+
 
 load_dotenv()
 WARDEN_USERNAME = os.getenv("WARDEN_USERNAME")
@@ -10,12 +12,6 @@ WARDEN_PASSWORD = os.getenv("WARDEN_PASSWORD")
 
 app = Flask(__name__)
 
-# Ensure CSV exists
-if not os.path.exists('complaints.csv'):
-    with open('complaints.csv', 'w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(["Name", "Room", "Mobile", "Branch", "Complaint","Date & Time", "Status"])
-        #  "Status", "Raised Date" it would be done later
 
 
 @app.route('/')
@@ -32,12 +28,7 @@ def student():
         branch = request.form.get('branch')
         complaint = request.form.get('complaint')
 
-        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        status = "Pending"  # Default status
-
-        with open('complaints.csv', 'a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow([name, room, mobile, branch, complaint, date, status])
+        insert_complaint(name, room, mobile, branch, complaint)
 
         return render_template('thank_you.html')
 
@@ -60,32 +51,22 @@ def warden_login():
 # Warden dashboard
 @app.route('/dashboard')
 def dashboard():
-    with open('complaints.csv', 'r') as file:
-        reader = csv.reader(file)
-        data = list(reader)
-    return render_template('dashboard.html', complaints=data[1:], headers=data[0])
+    complaints = get_all_complaints()
+    return render_template('dashboard.html', complaints=complaints)
 
 # mark complaint
-@app.route('/resolve/<int:index>')
-def mark_resolved(index):
-    # Read all complaints
-    with open('complaints.csv', 'r') as file:
-        reader = list(csv.reader(file))
-    
-    # Skip header
-    header = reader[0]
-    data = reader[1:]
-    
-    # Update status of selected complaint
-    data[index][6] = "Resolved"
-    
-    # Write back to CSV
-    with open('complaints.csv', 'w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(header)
-        writer.writerows(data)
-    
+@app.route('/resolve/<int:complaint_id>')
+def mark_resolved(complaint_id):
+    mark_complaint_resolved(complaint_id)
     return redirect(url_for('dashboard'))
+
+# delete complaint
+@app.route('/delete/<int:complaint_id>')
+def delete_complaint_route(complaint_id):
+    delete_complaint(complaint_id)
+    return redirect(url_for('dashboard'))
+
+
 
 
 if __name__ == "__main__":
