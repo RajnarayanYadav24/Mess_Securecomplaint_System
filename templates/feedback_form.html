@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 <head>
     <title>Student Complaint Form</title>
@@ -7,13 +7,23 @@
 <body>
     <h2>Raise Complaint / Feedback</h2>
     <form method="POST" autocomplete="off">
-        Name: <input type="text" name="name" required>
-        Room No: <input type="text" name="room" required>
-        Mobile: <input type="text" name="mobile" required>
-        Branch: <input type="text" name="branch" required>
+        Name: 
+        <input type="text" name="name" pattern="[A-Za-z\s]+" title="Name should contain alphabets only"  required>
+
+        Room No: 
+        <input type="text" name="room" pattern="[A-Za-z0-9]+" title="Room should be like 101 or C101"  required>
+
+        Mobile: 
+        <input type="text" name="mobile" pattern="\d{10}" maxlength="10" title="Enter exactly 10 digits"  required>
+
+        Branch: 
+        <input type="text" name="branch" pattern="[A-Za-z\s]+" title="Branch should contain alphabets only" required>
+
         Complaint:<br>
-        <textarea name="complaint" rows="4" required></textarea>
+        <textarea name="complaint" rows="4" placeholder="Write comment here...." required></textarea>
+
         <input type="submit" value="Submit">
     </form>
 </body>
 </html>
+
