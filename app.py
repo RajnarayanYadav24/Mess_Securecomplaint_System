@@ -3,7 +3,8 @@ import csv
 import os
 from datetime import datetime
 from dotenv import load_dotenv
-from db import insert_complaint, get_all_complaints,mark_complaint_resolved,delete_complaint
+from db import insert_complaint, get_all_complaints,mark_complaint_resolved,delete_complaint,get_db_connection
+from send_email import send_email
 
 
 load_dotenv()
@@ -25,10 +26,11 @@ def student():
         name = request.form.get('name')
         room = request.form.get('room')
         mobile = request.form.get('mobile')
+        email = request.form.get('email')
         branch = request.form.get('branch')
         complaint = request.form.get('complaint')
 
-        insert_complaint(name, room, mobile, branch, complaint)
+        insert_complaint(name, room, mobile, email, branch, complaint)
 
         return render_template('thank_you.html')
 
@@ -57,7 +59,35 @@ def dashboard():
 # mark complaint
 @app.route('/resolve/<int:complaint_id>')
 def mark_resolved(complaint_id):
+     # 1. Mark complaint as resolved in DB
     mark_complaint_resolved(complaint_id)
+
+    # 2. Get student email for that complaint
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT email, name FROM MESS_Complaints WHERE id = %s", (complaint_id,))
+    result = cur.fetchone()
+    conn.close()
+
+    if result:
+        student_email, student_name = result
+
+        # 3. Send an email notification
+        subject = "Your Mess Complaint Has Been Resolved"
+        body = f"""
+        Hello {student_name},
+
+        Your MESS Complaint (ID: {complaint_id}) has been successfully resolved.
+        Thank you for your patience.
+
+        - Hostel Management System
+        """
+        try:
+            send_email(student_email, subject, body)
+        except Exception as e:
+            print(f"Error sending email: {e}")
+
+    # 4. Redirect back to dashboard
     return redirect(url_for('dashboard'))
 
 # delete complaint

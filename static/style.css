@@ -94,6 +94,7 @@ form label {
 /* Input fields and textareas */
 form input[type="text"],
 form input[type="password"],
+form input[type="email"],
 form textarea {
     width: 100%;
     padding: 8px;

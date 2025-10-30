@@ -12,6 +12,7 @@
         <th>Name</th>
         <th>Room</th>
         <th>Mobile</th>
+        <th>Email</th>
         <th>Branch</th>
         <th>Complaint</th>
         <th>Date & Time</th>
@@ -24,12 +25,13 @@
         <td>{{ row[1] }}</td> <!-- name -->
         <td>{{ row[2] }}</td> <!-- room -->
         <td>{{ row[3] }}</td> <!-- mobile -->
-        <td>{{ row[4] }}</td> <!-- branch -->
-        <td>{{ row[5] }}</td> <!-- complaint -->
-        <td>{{ row[6] }}</td> <!-- date_time -->
-        <td>{{ row[7] }}</td> <!-- status -->
+        <td>{{ row[4] }}</td> <!-- email -->
+        <td>{{ row[5] }}</td> <!-- branch -->
+        <td>{{ row[6] }}</td> <!-- complaint -->
+        <td>{{ row[7] }}</td> <!-- date_time -->
+        <td>{{ row[8] }}</td> <!-- status -->
         <td>
-            {% if row[7] == "Pending" %}
+            {% if row[8] == "Pending" %}
                 <a href="{{ url_for('mark_resolved', complaint_id=row[0]) }}">
                     <button>Mark Resolved</button>
                 </a>

@@ -19,13 +19,13 @@ def get_db_connection():
         port=DB_PORT
     )
 
-def insert_complaint(name, room, mobile, branch, complaint):
+def insert_complaint(name, room, mobile, email, branch, complaint):
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("""
-        INSERT INTO mess_complaints (name, room, mobile, branch, complaint, date_time)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    """, (name, room, mobile, branch, complaint, datetime.now()))
+        INSERT INTO MESS_Complaints (name, room, mobile,email,  branch, complaint, date_time)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """, (name, room, mobile, email, branch, complaint, datetime.now()))
     conn.commit()
     cur.close()
     conn.close()
@@ -34,8 +34,8 @@ def get_all_complaints():
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("""
-        SELECT id, name, room, mobile, branch, complaint, date_time, status, action
-        FROM mess_complaints
+        SELECT id, name, room, mobile, email, branch, complaint, date_time, status, action
+        FROM MESS_Complaints
         ORDER BY date_time DESC
     """)
     rows = cur.fetchall()
@@ -48,7 +48,7 @@ def mark_complaint_resolved(complaint_id):
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("""
-        UPDATE mess_complaints
+        UPDATE MESS_Complaints
         SET status = 'Resolved'
         WHERE id = %s
     """, (complaint_id,))
@@ -61,7 +61,7 @@ def mark_complaint_resolved(complaint_id):
 def delete_complaint(complaint_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("DELETE FROM mess_complaints WHERE id = %s", (complaint_id,))
+    cur.execute("DELETE FROM MESS_Complaints WHERE id = %s", (complaint_id,))
     conn.commit()
     cur.close()
     conn.close()
