@@ -80,7 +80,6 @@ def mark_resolved(complaint_id):
         Your MESS Complaint (ID: {complaint_id}) has been successfully resolved.
         Thank you for your patience.
 
-        - Hostel Management System
         """
         try:
             send_email(student_email, subject, body)

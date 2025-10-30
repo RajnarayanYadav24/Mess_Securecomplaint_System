@@ -16,7 +16,8 @@ def get_db_connection():
         user=DB_USER,
         password=DB_PASSWORD,
         host=DB_HOST,
-        port=DB_PORT
+        port=DB_PORT,
+        sslmode="require"
     )
 
 def insert_complaint(name, room, mobile, email, branch, complaint):
