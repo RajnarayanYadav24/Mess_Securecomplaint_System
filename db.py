@@ -68,4 +68,13 @@ def delete_complaint(complaint_id):
     conn.close()
 
 
+def verify_student_login(username, password):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM Students WHERE username = %s AND password = %s", (username, password))
+    student = cur.fetchone()
+    cur.close()
+    conn.close()
+    return student
+
 

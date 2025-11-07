@@ -3,14 +3,15 @@ import csv
 import os
 from datetime import datetime
 from dotenv import load_dotenv
-from db import insert_complaint, get_all_complaints,mark_complaint_resolved,delete_complaint,get_db_connection
+from db import insert_complaint, get_all_complaints,mark_complaint_resolved,delete_complaint,get_db_connection,verify_student_login
 from send_email import send_email
 
 
 load_dotenv()
 WARDEN_USERNAME = os.getenv("WARDEN_USERNAME")
 WARDEN_PASSWORD = os.getenv("WARDEN_PASSWORD")
-
+Student1_name = os.getenv("Student1_name")
+Student1_password = os.getenv("Student1_password")
 app = Flask(__name__)
 
 
@@ -18,6 +19,22 @@ app = Flask(__name__)
 @app.route('/')
 def landing():
     return render_template('landing.html')
+
+
+# Student Login
+@app.route('/stulogin', methods=['GET','POST'])
+def student_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        student = verify_student_login(username, password)
+        if student:
+            return redirect(url_for('student'))
+        else:
+            return "<h3 style='color:red;'>Invalid credentials. Try again.</h3>"
+        
+    return render_template('student_login.html')    
 
 # Student complaint form
 @app.route('/student', methods=['GET', 'POST'])
@@ -73,14 +90,23 @@ def mark_resolved(complaint_id):
         student_email, student_name = result
 
         # 3. Send an email notification
-        subject = "Your Mess Complaint Has Been Resolved"
-        body = f"""
-        Hello {student_name},
+        subject = "Notification: Your Mess Complaint Has Been Resolved"
 
-        Your MESS Complaint (ID: {complaint_id}) has been successfully resolved.
-        Thank you for your patience.
+        body = f"""
+        Dear {student_name},
+
+        This is to inform you that your mess complaint (Complaint ID: {complaint_id}) has been successfully resolved.
+
+        Thank you for your patience and cooperation during the resolution process.  
+        If you have any further concerns or notice any related issues, please feel free to contact the hostel office.
+
+        Warm regards,  
+        Warden Sir Name  
+        Warden, Aryabhatta Hostel  
+        Harcourt Butler Technical University, Kanpur
 
         """
+
         try:
             send_email(student_email, subject, body)
         except Exception as e:
