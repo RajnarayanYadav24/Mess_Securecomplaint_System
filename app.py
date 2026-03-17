@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for,session
 import csv
 import os
 from datetime import datetime
@@ -12,8 +12,10 @@ WARDEN_USERNAME = os.getenv("WARDEN_USERNAME")
 WARDEN_PASSWORD = os.getenv("WARDEN_PASSWORD")
 Student1_name = os.getenv("Student1_name")
 Student1_password = os.getenv("Student1_password")
+
 app = Flask(__name__)
 
+app.secret_key =os.getenv("SECRET_KEY")
 
 
 @app.route('/')
@@ -27,8 +29,9 @@ def student_login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-
+        
         student = verify_student_login(username, password)
+        session['username'] = username
         if student:
             return redirect(url_for('student'))
         else:
@@ -39,7 +42,9 @@ def student_login():
 # Student complaint form
 @app.route('/student', methods=['GET', 'POST'])
 def student():
-    if request.method == 'POST':
+     if not session.get('username'):
+         return redirect('/stulogin')
+     if request.method == 'POST':
         name = request.form.get('name')
         room = request.form.get('room')
         mobile = request.form.get('mobile')
@@ -51,7 +56,7 @@ def student():
 
         return render_template('thank_you.html')
 
-    return render_template('feedback_form.html')
+     return render_template('feedback_form.html')
 
 # Warden login
 @app.route('/warden', methods=['GET', 'POST'])
@@ -61,6 +66,7 @@ def warden_login():
         password = request.form.get('password')
 
         if username == WARDEN_USERNAME and password == WARDEN_PASSWORD:
+            session['username'] = username
             return redirect(url_for('dashboard'))
         else:
             return "<h3 style='color:red;'>Invalid credentials. Try again.</h3>"
@@ -70,6 +76,8 @@ def warden_login():
 # Warden dashboard
 @app.route('/dashboard')
 def dashboard():
+    if not session.get('username'):
+     return redirect('/warden')
     complaints = get_all_complaints()
     return render_template('dashboard.html', complaints=complaints)
 
